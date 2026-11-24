@@ -1,0 +1,132 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backup Scheduling | SecureVault</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header class="topbar">
+    <div class="logo">SecureVault</div>
+    <div>Encrypted Backup & Recovery Management</div>
+</header>
+
+<div class="dashboard-container">
+
+    <aside class="sidebar">
+        <h3>Navigation</h3>
+        <a href="{{ url_for('index') }}">Dashboard</a>
+        <a href="{{ url_for('backup_page') }}">Create Backup</a>
+        <a href="{{ url_for('schedules_page') }}" class="active">Backup Scheduling</a>
+        <a href="{{ url_for('integrity_page') }}">Integrity Verification</a>
+        <a href="{{ url_for('restore_page') }}">Restore Backup</a>
+        <a href="{{ url_for('audit_page') }}">Recovery Audit</a>
+    </aside>
+
+    <main class="main-content">
+
+        <div class="page-heading">
+            <h1>Backup Scheduling</h1>
+            <p>Schedule automatic backups of your important files.</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <section class="card">
+            <h2>Create New Schedule</h2>
+
+            <form method="POST" action="{{ url_for('schedules_page') }}">
+
+                <div class="form-group">
+                    <label for="file_path">File Path</label>
+                    <input
+                        type="text"
+                        id="file_path"
+                        name="file_path"
+                        placeholder="Example: C:\Users\Admin\Documents\sample.txt"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="schedule_type">Backup Frequency</label>
+                    <select id="schedule_type" name="schedule_type" required>
+                        <option value="">Select Frequency</option>
+                        <option value="hourly">Hourly</option>
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="primary-btn">
+                    Create Schedule
+                </button>
+
+            </form>
+        </section>
+
+        <section class="card">
+            <h2>Scheduled Backups</h2>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>File Path</th>
+                            <th>Frequency</th>
+                            <th>Next Run</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for item in schedules %}
+                        <tr>
+                            <td>{{ item.id }}</td>
+                            <td>{{ item.file_name }}</td>
+                            <td>{{ item.schedule_type }}</td>
+                            <td>{{ item.next_run }}</td>
+                            <td>{{ item.status }}</td>
+                            <td>
+                                <form
+                                    method="POST"
+                                    action="{{ url_for('remove_schedule', schedule_id=item.id) }}"
+                                    onsubmit="return confirm('Delete this schedule?');"
+                                >
+                                    <button type="submit" class="danger-btn">
+                                        Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6">No backup schedules found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+
+                </table>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>

@@ -1,0 +1,65 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recovery Audit Report</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Recovery Audit Report</h1>
+        <p>Track all backup restoration activities and their results.</p>
+
+        <h2>Audit Summary</h2>
+
+        <div class="stats">
+            <div class="card">
+                <h3>Total Operations</h3>
+                <p>{{ audit_records|length }}</p>
+            </div>
+            <div class="card">
+                <h3>Successful</h3>
+                <p>{{ audit_records|selectattr('status', 'equalto', 'Success')|list|length }}</p>
+            </div>
+            <div class="card">
+                <h3>Failed</h3>
+                <p>{{ audit_records|selectattr('status', 'equalto', 'Failed')|list|length }}</p>
+            </div>
+        </div>
+
+        <h2>Audit History</h2>
+
+        {% if audit_records %}
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>File Name</th>
+                <th>Version</th>
+                <th>Action</th>
+                <th>Date</th>
+                <th>Status</th>
+            </tr>
+
+            {% for record in audit_records %}
+            <tr>
+                <td>{{ record.id }}</td>
+                <td>{{ record.file_name }}</td>
+                <td>{{ record.version }}</td>
+                <td>{{ record.action }}</td>
+                <td>{{ record.operation_date }}</td>
+                <td>{{ record.status }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <p>No recovery audit records available yet.</p>
+        {% endif %}
+
+        <a href="{{ url_for('index') }}">Back to Dashboard</a>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

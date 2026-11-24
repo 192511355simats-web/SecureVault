@@ -1,0 +1,176 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SecureVault - Restore Backup</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<header class="topbar">
+    <div class="logo">SecureVault</div>
+    <div>Encrypted Backup and Recovery Management System</div>
+</header>
+
+<div class="dashboard-container">
+
+    <aside class="sidebar">
+
+        <h3>Navigation</h3>
+
+        <a href="{{ url_for('index') }}">Dashboard</a>
+
+        <a href="{{ url_for('backup_page') }}">Create Backup</a>
+
+        <a href="{{ url_for('schedules_page') }}">Backup Scheduling</a>
+
+        <a href="{{ url_for('integrity_page') }}">Integrity Verification</a>
+
+        <a href="{{ url_for('restore_page') }}" class="active">
+            Restore Backup
+        </a>
+
+        <a href="{{ url_for('audit_page') }}">Recovery Audit</a>
+
+    </aside>
+
+    <main class="main-content">
+
+        <div class="page-heading">
+            <h1>Restore Backup</h1>
+
+            <p>
+                Select a previously encrypted backup and restore
+                the original file securely.
+            </p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <section class="card">
+
+            <h2>Selective Backup Recovery</h2>
+
+            <p>
+                Choose the backup version you want to recover.
+                The restored file will be saved in the restored folder.
+            </p>
+
+            <form action="{{ url_for('restore_page') }}"
+                  method="POST"
+                  onsubmit="return confirm('Are you sure you want to restore this backup?');">
+
+                <label for="backup_id">Select Backup Version</label>
+
+                <select name="backup_id" id="backup_id" required>
+
+                    <option value="">-- Select Backup --</option>
+
+                    {% for backup in backups %}
+
+                        <option value="{{ backup.id }}">
+                            {{ backup.file_name }}
+                            - Version {{ backup.version }}
+                            - {{ backup.backup_date }}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+                <button type="submit" class="primary-btn">
+                    Restore Selected Backup
+                </button>
+
+            </form>
+
+        </section>
+
+        <section class="card">
+
+            <h2>Available Backup Versions</h2>
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Backup ID</th>
+                            <th>File Name</th>
+                            <th>Version</th>
+                            <th>Backup Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for backup in backups %}
+
+                        <tr>
+                            <td>{{ backup.id }}</td>
+                            <td>{{ backup.file_name }}</td>
+                            <td>v{{ backup.version }}</td>
+                            <td>{{ backup.backup_date }}</td>
+                            <td>{{ backup.status }}</td>
+                        </tr>
+
+                        {% else %}
+
+                        <tr>
+                            <td colspan="5">
+                                No backup versions available yet.
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+        <section class="card">
+
+            <h2>Recovery Information</h2>
+
+            <p>
+                <strong>Encryption:</strong> AES-256-GCM
+            </p>
+
+            <p>
+                <strong>Integrity:</strong> SHA-256 hash verification
+            </p>
+
+            <p>
+                <strong>Recovery Location:</strong> restored folder
+            </p>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>

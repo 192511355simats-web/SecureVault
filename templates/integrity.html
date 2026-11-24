@@ -1,0 +1,138 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureVault - Integrity Verification</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<header class="topbar">
+    <div class="logo">SecureVault</div>
+    <div>Encrypted Backup Integrity Management</div>
+</header>
+
+<div class="dashboard-container">
+
+    <aside class="sidebar">
+        <h3>Navigation</h3>
+
+        <a href="{{ url_for('index') }}">Dashboard</a>
+        <a href="{{ url_for('backup_page') }}">Create Backup</a>
+        <a href="{{ url_for('schedules_page') }}">Backup Scheduling</a>
+        <a href="{{ url_for('integrity_page') }}" class="active">
+            Integrity Verification
+        </a>
+        <a href="{{ url_for('restore_page') }}">Restore Backup</a>
+        <a href="{{ url_for('audit_page') }}">Recovery Audit</a>
+    </aside>
+
+    <main class="main-content">
+
+        <div class="page-heading">
+            <h1>Integrity Verification</h1>
+            <p>Verify encrypted backup integrity using SHA-256 hashing.</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <section class="card">
+
+            <h2>Verify Backup</h2>
+
+            <p>
+                Select a backup to verify whether its restored content
+                matches the original SHA-256 hash.
+            </p>
+
+            <form action="{{ url_for('integrity_page') }}"
+                  method="POST">
+
+                <label for="backup_id">Select Backup</label>
+
+                <select name="backup_id" id="backup_id" required>
+
+                    <option value="">-- Select Backup --</option>
+
+                    {% for backup in backups %}
+                        <option value="{{ backup.id }}">
+                            {{ backup.file_name }} - Version {{ backup.version }}
+                        </option>
+                    {% endfor %}
+
+                </select>
+
+                <button type="submit" class="primary-btn">
+                    Verify Backup Integrity
+                </button>
+
+            </form>
+
+        </section>
+
+        <section class="card">
+
+            <h2>Available Backups</h2>
+
+            <div class="table-container">
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>File Name</th>
+                            <th>Version</th>
+                            <th>Backup Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for backup in backups %}
+
+                        <tr>
+                            <td>{{ backup.id }}</td>
+                            <td>{{ backup.file_name }}</td>
+                            <td>v{{ backup.version }}</td>
+                            <td>{{ backup.backup_date }}</td>
+                            <td>{{ backup.status }}</td>
+                        </tr>
+
+                        {% else %}
+
+                        <tr>
+                            <td colspan="5">
+                                No backups available yet.
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>

@@ -1,0 +1,208 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Recovery Audit | SecureVault</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<header class="topbar">
+    <div class="brand">
+        <span class="logo">🔐</span>
+        <div>
+            <h2>SecureVault</h2>
+            <p>Encrypted Backup & Recovery</p>
+        </div>
+    </div>
+
+    <div class="system-status">
+        <span class="status-dot"></span>
+        System Active
+    </div>
+</header>
+
+<div class="layout">
+
+    <aside class="sidebar">
+
+        <h3>MAIN MENU</h3>
+
+        <a href="/" class="nav-link">🏠 Dashboard</a>
+        <a href="/backup" class="nav-link">📁 Backup Management</a>
+        <a href="/integrity" class="nav-link">🛡️ Integrity Verification</a>
+        <a href="/restore" class="nav-link">♻️ Restore & Recovery</a>
+        <a href="/audit" class="nav-link active">📋 Recovery Audit</a>
+
+        <div class="sidebar-bottom">
+            <p>Cryptography Project</p>
+            <strong>Secure Data Protection</strong>
+        </div>
+
+    </aside>
+
+    <main class="main-content">
+
+        <div class="welcome-section">
+            <div>
+                <p class="subtitle">SECURITY MONITORING</p>
+                <h1>Recovery Audit Log</h1>
+                <p class="description">
+                    Monitor and review all backup recovery activities
+                    performed by the system.
+                </p>
+            </div>
+        </div>
+
+        <section class="stats-grid">
+
+            <div class="stat-card">
+                <div class="stat-icon blue">📋</div>
+                <p>Total Audit Records</p>
+                <h2>{{ audit_records|length }}</h2>
+                <span>Recorded operations</span>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon green">✅</div>
+                <p>Successful Operations</p>
+                <h2>
+                    {{ audit_records|selectattr('status', 'equalto', 'Success')|list|length }}
+                </h2>
+                <span>Completed recoveries</span>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon red">⚠️</div>
+                <p>Failed Operations</p>
+                <h2>
+                    {{ audit_records|selectattr('status', 'equalto', 'Failed')|list|length }}
+                </h2>
+                <span>Unsuccessful recoveries</span>
+            </div>
+
+        </section>
+
+        <section class="content-card">
+
+            <div class="section-heading">
+                <div>
+                    <h2>📋 Recovery Activity History</h2>
+                    <p>Complete record of restoration operations.</p>
+                </div>
+            </div>
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Audit ID</th>
+                            <th>File Name</th>
+                            <th>Version</th>
+                            <th>Action</th>
+                            <th>Operation Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for record in audit_records %}
+
+                        <tr>
+                            <td>#{{ record['id'] }}</td>
+
+                            <td>{{ record['file_name'] }}</td>
+
+                            <td>V{{ record['version'] }}</td>
+
+                            <td>{{ record['action'] }}</td>
+
+                            <td>{{ record['operation_date'] }}</td>
+
+                            <td>
+                                <span class="table-status">
+                                    {{ record['status'] }}
+                                </span>
+                            </td>
+                        </tr>
+
+                        {% else %}
+
+                        <tr>
+                            <td colspan="6" class="empty-message">
+                                No recovery audit records available.
+                                Restore a backup to generate an audit record.
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+        <section class="content-card">
+
+            <div class="section-heading">
+                <div>
+                    <h2>Audit Information</h2>
+                    <p>Security and accountability features.</p>
+                </div>
+            </div>
+
+            <div class="process-grid">
+
+                <div class="process-item">
+                    <span>01</span>
+                    <h3>Activity Tracking</h3>
+                    <p>Records each backup restoration action.</p>
+                </div>
+
+                <div class="process-item">
+                    <span>02</span>
+                    <h3>Version Tracking</h3>
+                    <p>Identifies the restored backup version.</p>
+                </div>
+
+                <div class="process-item">
+                    <span>03</span>
+                    <h3>Status Monitoring</h3>
+                    <p>Displays successful and failed operations.</p>
+                </div>
+
+                <div class="process-item">
+                    <span>04</span>
+                    <h3>Audit History</h3>
+                    <p>Maintains a database record of recovery activity.</p>
+                </div>
+
+            </div>
+
+        </section>
+
+        <footer>
+            <p>Innovative Encrypted Backup and Recovery Management System</p>
+            <span>Powered by AES-256-GCM Encryption</span>
+        </footer>
+
+    </main>
+
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>

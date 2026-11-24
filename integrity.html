@@ -1,0 +1,213 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Integrity Verification | SecureVault</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<header class="topbar">
+    <div class="brand">
+        <span class="logo">🔐</span>
+        <div>
+            <h2>SecureVault</h2>
+            <p>Encrypted Backup & Recovery</p>
+        </div>
+    </div>
+
+    <div class="system-status">
+        <span class="status-dot"></span>
+        System Active
+    </div>
+</header>
+
+<div class="layout">
+
+    <aside class="sidebar">
+
+        <h3>MAIN MENU</h3>
+
+        <a href="/" class="nav-link">🏠 Dashboard</a>
+        <a href="/backup" class="nav-link">📁 Backup Management</a>
+        <a href="/integrity" class="nav-link active">🛡️ Integrity Verification</a>
+        <a href="/restore" class="nav-link">♻️ Restore & Recovery</a>
+        <a href="/audit" class="nav-link">📋 Recovery Audit</a>
+
+        <div class="sidebar-bottom">
+            <p>Cryptography Project</p>
+            <strong>Secure Data Protection</strong>
+        </div>
+
+    </aside>
+
+    <main class="main-content">
+
+        <div class="welcome-section">
+            <div>
+                <p class="subtitle">MODULE 03</p>
+                <h1>Integrity Verification</h1>
+                <p class="description">
+                    Verify encrypted backup files and detect
+                    unauthorized modifications.
+                </p>
+            </div>
+        </div>
+
+        <section class="content-card">
+
+            <div class="section-heading">
+                <div>
+                    <h2>🛡️ Verify Backup Integrity</h2>
+                    <p>
+                        Select a backup record to check its authenticity.
+                    </p>
+                </div>
+            </div>
+
+            <form action="/integrity" method="POST"
+                  class="verification-form">
+
+                <label for="backup_id">Select Backup</label>
+
+                <select name="backup_id" id="backup_id" required>
+
+                    <option value="">-- Select Backup Version --</option>
+
+                    {% for backup in backups %}
+
+                    <option value="{{ backup['id'] }}">
+                        ID: {{ backup['id'] }} |
+                        {{ backup['file_name'] }} |
+                        Version {{ backup['version'] }}
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+                <button type="submit" class="primary-button">
+                    🔍 Verify Integrity
+                </button>
+
+            </form>
+
+        </section>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash-message">
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <section class="content-card">
+
+            <div class="section-heading">
+                <div>
+                    <h2>Verification Information</h2>
+                    <p>Security checks performed by the system.</p>
+                </div>
+            </div>
+
+            <div class="encryption-info">
+
+                <div>
+                    <span>Encryption Verification</span>
+                    <strong>AES-256-GCM</strong>
+                </div>
+
+                <div>
+                    <span>Hash Algorithm</span>
+                    <strong>SHA-256</strong>
+                </div>
+
+                <div>
+                    <span>Verification Method</span>
+                    <strong>Hash Comparison</strong>
+                </div>
+
+            </div>
+
+        </section>
+
+        <section class="content-card">
+
+            <div class="section-heading">
+                <div>
+                    <h2>Available Backup Records</h2>
+                    <p>Choose a backup for integrity verification.</p>
+                </div>
+            </div>
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Backup ID</th>
+                            <th>File Name</th>
+                            <th>Version</th>
+                            <th>Key Version</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for backup in backups %}
+
+                        <tr>
+                            <td>#{{ backup['id'] }}</td>
+                            <td>{{ backup['file_name'] }}</td>
+                            <td>V{{ backup['version'] }}</td>
+                            <td>Key V{{ backup['key_version'] }}</td>
+
+                            <td>
+                                <span class="table-status">
+                                    {{ backup['status'] }}
+                                </span>
+                            </td>
+                        </tr>
+
+                        {% else %}
+
+                        <tr>
+                            <td colspan="5" class="empty-message">
+                                No backup records available.
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+        <footer>
+            <p>Innovative Encrypted Backup and Recovery Management System</p>
+            <span>Powered by AES-256-GCM Encryption</span>
+        </footer>
+
+    </main>
+
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>

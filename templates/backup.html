@@ -1,0 +1,156 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SecureVault - Create Backup</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<header class="topbar">
+    <div class="logo">SecureVault</div>
+    <div>Innovative Encrypted Backup and Recovery Management System</div>
+</header>
+
+<div class="dashboard-container">
+
+    <aside class="sidebar">
+
+        <h3>Navigation</h3>
+
+        <a href="{{ url_for('index') }}">Dashboard</a>
+
+        <a href="{{ url_for('backup_page') }}" class="active">
+            Create Backup
+        </a>
+
+        <a href="{{ url_for('schedules_page') }}">
+            Backup Scheduling
+        </a>
+
+        <a href="{{ url_for('integrity_page') }}">
+            Integrity Verification
+        </a>
+
+        <a href="{{ url_for('restore_page') }}">
+            Restore Backup
+        </a>
+
+        <a href="{{ url_for('audit_page') }}">
+            Recovery Audit
+        </a>
+
+    </aside>
+
+    <main class="main-content">
+
+        <div class="page-heading">
+            <h1>Create Encrypted Backup</h1>
+            <p>
+                Upload your files and securely encrypt them
+                using AES-256-GCM encryption.
+            </p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <section class="card">
+
+            <h2>Upload File</h2>
+
+            <p>
+                Select a file from your computer to create
+                an encrypted backup.
+            </p>
+
+            <form action="{{ url_for('backup_page') }}"
+                  method="POST"
+                  enctype="multipart/form-data">
+
+                <label for="file">Choose File</label>
+
+                <input
+                    type="file"
+                    id="file"
+                    name="file"
+                    required
+                >
+
+                <button type="submit" class="primary-btn">
+                    Create Encrypted Backup
+                </button>
+
+            </form>
+
+        </section>
+
+        <section class="card">
+
+            <h2>Backup History</h2>
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>File Name</th>
+                            <th>Version</th>
+                            <th>Backup Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for backup in backups %}
+
+                        <tr>
+                            <td>{{ backup.id }}</td>
+                            <td>{{ backup.file_name }}</td>
+                            <td>v{{ backup.version }}</td>
+                            <td>{{ backup.backup_date }}</td>
+                            <td>{{ backup.status }}</td>
+                        </tr>
+
+                        {% else %}
+
+                        <tr>
+                            <td colspan="5">
+                                No backups available yet.
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>

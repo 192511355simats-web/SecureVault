@@ -1,0 +1,25 @@
+# Runtime storage must stay off source control.
+*.db
+*.db-shm
+*.db-wal
+*.bin
+*.enc
+/data/
+/uploads/
+/keys/
+/keys_folder/
+/backups/
+/backups_folder/
+/restored/
+/restored_folder/
+/backups_old
+/keys_old
+/restored_old
+/static_old
+/templates_old
+/.venv/
+__pycache__/
+*.py[cod]
+.env
+.env.*
+!.env.example

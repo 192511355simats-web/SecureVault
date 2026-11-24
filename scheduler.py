@@ -206,3 +206,49 @@ def delete_schedule(schedule_id):
             scheduler.remove_job(str(schedule_id))
 
     return "Backup schedule deleted successfully."
+
+
+def run_due_schedules():
+    """Run due schedules. This can be called by an external free-tier timer."""
+
+    initialize_database()
+    now = datetime.now()
+    connection = get_connection()
+    cursor = connection.cursor()
+    cursor.execute(
+        "SELECT id, file_name, schedule_type FROM schedules "
+        "WHERE status = 'Active' AND next_run <= ? ORDER BY id",
+        (now.strftime("%Y-%m-%d %H:%M:%S"),)
+    )
+    due_schedules = cursor.fetchall()
+    connection.close()
+
+    completed = 0
+    failed = 0
+    intervals = {"hourly": 1, "daily": 24, "weekly": 168}
+
+    for schedule in due_schedules:
+        file_path = schedule["file_name"]
+        hours = intervals.get(schedule["schedule_type"].lower())
+        try:
+            if not hours:
+                raise ValueError("Invalid schedule type.")
+            if not os.path.isfile(file_path):
+                raise FileNotFoundError(f"Scheduled file not found: {file_path}")
+            create_backup(file_path)
+            completed += 1
+        except Exception as error:
+            failed += 1
+            print(f"Scheduled backup failed for {file_path}: {error}")
+        finally:
+            if hours:
+                next_run = now + timedelta(hours=hours)
+                connection = get_connection()
+                connection.execute(
+                    "UPDATE schedules SET next_run = ? WHERE id = ?",
+                    (next_run.strftime("%Y-%m-%d %H:%M:%S"), schedule["id"])
+                )
+                connection.commit()
+                connection.close()
+
+    return {"due": len(due_schedules), "completed": completed, "failed": failed}

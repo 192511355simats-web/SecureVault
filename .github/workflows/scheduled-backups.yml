@@ -1,0 +1,24 @@
+name: SecureVault scheduled backups
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  run-due-backups:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger due backups
+        env:
+          APP_URL: ${{ vars.SECUREVAULT_BASE_URL }}
+          SCHEDULER_TOKEN: ${{ secrets.SECUREVAULT_SCHEDULER_TOKEN }}
+        run: |
+          test -n "$APP_URL"
+          test -n "$SCHEDULER_TOKEN"
+          curl --fail --silent --show-error \
+            --request POST \
+            --header "Authorization: Bearer $SCHEDULER_TOKEN" \
+            "$APP_URL/internal/run-scheduled-backups"

@@ -1,6 +1,7 @@
 
 import os
 import secrets
+import hmac
 
 from flask import (
     Flask,
@@ -8,7 +9,9 @@ from flask import (
     request,
     redirect,
     url_for,
-    flash
+    flash,
+    abort,
+    jsonify,
 )
 
 from werkzeug.utils import secure_filename
@@ -23,7 +26,8 @@ from scheduler import (
     add_schedule,
     get_all_schedules,
     delete_schedule,
-    start_scheduler
+    start_scheduler,
+    run_due_schedules,
 )
 
 
@@ -352,12 +356,24 @@ def delete_schedule_route(schedule_id):
     return redirect(url_for("schedules_page"))
 
 
+@app.route("/internal/run-scheduled-backups", methods=["POST"])
+def run_scheduled_backups():
+    expected_token = os.environ.get("SCHEDULER_TOKEN", "")
+    supplied_token = request.headers.get("Authorization", "")
+    if not expected_token or not hmac.compare_digest(
+        supplied_token, f"Bearer {expected_token}"
+    ):
+        abort(403)
+    return jsonify(run_due_schedules())
+
+
 # --------------------------------------------------
 # APPLICATION START
 # --------------------------------------------------
 
 initialize_database()
-start_scheduler()
+if not os.environ.get("WEBSITE_SITE_NAME"):
+    start_scheduler()
 
 if __name__ == "__main__":
 
